@@ -9,10 +9,19 @@ import ProgressDashboard from './ProgressDashboard';
 
 const Dashboard = ({ isFocusMode }) => {
     const { currentUser } = useAuth();
-    const { profile, progress, updateProgress, saveAntiJumpAttempt, saveDailyLog } = useFocusTracker(currentUser?.uid);
+    const { profile, progress, loading, updateProgress, saveAntiJumpAttempt, saveDailyLog } = useFocusTracker(currentUser?.uid);
     const [selectedDay, setSelectedDay] = useState(null);
 
     if (!currentUser) return null;
+
+    if (loading) {
+        return (
+            <div className="loading-screen">
+                <div className="spinner"></div>
+                <p>Syncing your progress...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="dashboard-grid">

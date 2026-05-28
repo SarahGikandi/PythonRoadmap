@@ -19,24 +19,35 @@ export const useFocusTracker = (userId) => {
 
         // 1. Sync Profile
         const profileRef = doc(db, 'users', userId, 'profile', 'data');
-        const unsubProfile = onSnapshot(profileRef, (docSnap) => {
-            if (docSnap.exists()) {
-                setProfile(docSnap.data());
-            } else {
-                setDoc(profileRef, { currentWeek: 1 }, { merge: true });
+        const unsubProfile = onSnapshot(profileRef,
+            (docSnap) => {
+                if (docSnap.exists()) {
+                    setProfile(docSnap.data());
+                } else {
+                    setDoc(profileRef, { currentWeek: 1 }, { merge: true });
+                }
+            },
+            (error) => {
+                console.error("Profile Sync Error:", error);
             }
-        });
+        );
 
         // 2. Sync Progress (Real-time for all weeks)
         const progressColRef = collection(db, 'users', userId, 'progress');
-        const unsubProgress = onSnapshot(progressColRef, (querySnapshot) => {
-            const allProgress = {};
-            querySnapshot.forEach((doc) => {
-                allProgress[doc.id] = doc.data();
-            });
-            setProgress(allProgress);
-            setLoading(false);
-        });
+        const unsubProgress = onSnapshot(progressColRef,
+            (querySnapshot) => {
+                const allProgress = {};
+                querySnapshot.forEach((doc) => {
+                    allProgress[doc.id] = doc.data();
+                });
+                setProgress(allProgress);
+                setLoading(false);
+            },
+            (error) => {
+                console.error("Progress Sync Error:", error);
+                setLoading(false); // Make sure we stop loading even on error
+            }
+        );
 
         return () => {
             unsubProfile();
@@ -45,14 +56,19 @@ export const useFocusTracker = (userId) => {
     }, [userId]);
 
     const updateProgress = async (week, day, data) => {
-        // Structure: users/{userId}/progress/week{N}/day{M}
-        const weekRef = doc(db, 'users', userId, 'progress', `week${week}`);
-        await setDoc(weekRef, {
-            [`day${day}`]: {
-                ...data,
-                updatedAt: serverTimestamp()
-            }
-        }, { merge: true });
+        try {
+            // Structure: users/{userId}/progress/week{N}/day{M}
+            const weekRef = doc(db, 'users', userId, 'progress', `week${week}`);
+            await setDoc(weekRef, {
+                [`day${day}`]: {
+                    ...data,
+                    updatedAt: serverTimestamp()
+                }
+            }, { merge: true });
+        } catch (error) {
+            console.error("Update Progress Error:", error);
+            alert("Failed to save progress. Please check your connection.");
+        }
     };
 
     const saveAntiJumpAttempt = async (message) => {
