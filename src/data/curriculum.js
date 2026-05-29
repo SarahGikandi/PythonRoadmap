@@ -9,7 +9,7 @@ export const curriculum = [
       { id: 4, title: "If/else and Loops", topics: ["Conditional logic", "Elif", "Nested if", "For loops", "While loops", "Range()"] },
       { id: 5, title: "Lists, Dictionaries Basics, sets and match", topics: ["Creating lists", "Indexing", "Simple dictionaries"] },
       { id: 6, title: "Range, Arrays, Itelators, Modules, Date", topics: ["Accessing and declaring arrays", "Iterators", "Modules", "Date"] },
-      { id: 7, title: "Json, RegEx, PIP, Try/Except, None", topics: ["Json", "RegEx", "PIP", "Try/Except", "None"] },
+      { id: 7, title: "Json, RegEx, PIP, Try/Except, None", topics: ["Json", "RegEx", "PIP", "Try and Except", "None"] },
     ]
   },
   {
